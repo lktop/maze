@@ -23,13 +23,73 @@ public class Maze {
 //		迷宫输出迷宫
 		for(int i=0;i<size;i++) {
 			for(int j=0;j<size;j++) {
-					System.out.printf("%d ",maze[i][j]);
+					System.out.printf("%d ",maze[j][i]);
 					if((j+1)%size==0) {
 						System.out.println("");
 					}
 			}
 		}
 		mazesize.close();
+		
+//		深度优先进行寻路
+		Stack<Pos> posstack=new Stack<Pos>();
+		posstack.push(new Pos(1,1));
+		int endposx=maze[0].length-2;
+		int endposy=maze[0].length-2;
+		Pos nowpos=new Pos(1,1);
+		int[][] alrmaze=maze;
+		alrmaze[1][1]=1;
+		while(!posstack.isEmpty()&&(nowpos.x!=endposx||nowpos.y!=endposy)) {
+			int i=1;
+			int xp=nowpos.x,yp=nowpos.y;
+			while(i<=5) {
+				if(i==1) {
+					//向上
+					if(maze[xp][yp-1]==0&&alrmaze[xp][yp-1]!=1) {
+						posstack.push(new Pos(xp,yp-1));
+						alrmaze[xp][yp-1]=1;
+						break;
+					}
+				}
+				if(i==2) {
+					//向右
+					if(maze[xp+1][yp]==0&&alrmaze[xp+1][yp]!=1) {
+						posstack.push(new Pos(xp+1,yp));
+						alrmaze[xp+1][yp]=1;
+						break;
+					}
+				}
+				if(i==3) {
+					//向下
+					if(maze[xp][yp+1]==0&&alrmaze[xp][yp+1]!=1) {
+						posstack.push(new Pos(xp,yp+1));
+						alrmaze[xp][yp+1]=1;
+						break;
+					}
+				}
+				if(i==4) {
+					//向左
+					if(maze[xp-1][yp]==0&&alrmaze[xp-1][yp]!=1) {
+						posstack.push(new Pos(xp-1,yp));
+						alrmaze[xp-1][yp]=1;
+						break;
+					}
+					
+				}
+				if(i==5) {
+					posstack.pop();
+					break;
+				}
+				i++;
+			}
+			nowpos.x=posstack.peek().x;
+			nowpos.y=posstack.peek().y;
+			System.out.printf("%d  %d \n",nowpos.x,nowpos.y);
+		}
+//		广度优先进行寻路
+		
+//		A*算法进行寻路
+		
 		}
 	
 	
