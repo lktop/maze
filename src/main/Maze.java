@@ -20,17 +20,18 @@ public class Maze {
 		}
 //		迷宫生成
 		maze=mazeheadle(maze);
+		int [][] Originalmaze=new int[size][size];
 //		迷宫输出迷宫
 		for(int i=0;i<size;i++) {
 			for(int j=0;j<size;j++) {
 					System.out.printf("%d ",maze[j][i]);
+					Originalmaze[j][i]=maze[j][i];
 					if((j+1)%size==0) {
 						System.out.println("");
 					}
 			}
 		}
 		mazesize.close();
-		
 //		深度优先进行寻路
 		Stack<Pos> posstack=new Stack<Pos>();
 		posstack.push(new Pos(1,1));
@@ -84,14 +85,61 @@ public class Maze {
 			}
 			nowpos.x=posstack.peek().x;
 			nowpos.y=posstack.peek().y;
-			System.out.printf("%d  %d \n",nowpos.x,nowpos.y);
+//			System.out.printf("%d  %d \n",nowpos.x,nowpos.y);
 		}
 //		广度优先进行寻路
 		
+		int[][] dir = {{1, 0}, {0, 1},{-1, 0}, {0, -1}};
+        int[][] visited=new int[maze[0].length][maze[0].length];
+        Node start=new Node(1,1);
+        Node end=new Node(maze[0].length-2,maze[0].length-2);
+        Queue<Node> queue=new LinkedList<Node>();
+        ArrayList<Node> arrayList=new ArrayList<Node>();//用来保存每一个出队列的节点
+        queue.offer(start);
+        while (!queue.isEmpty()){
+            Node local=queue.remove();
+            arrayList.add(local);
+            if(local.x==end.x&&local.y==end.y) {
+            	break;
+            }
+            for (int i=0;i<4;i++){
+                Node nbr=new Node(local.x+dir[i][0],local.y+dir[i][1]);
+                if(nbr.x>=1&&nbr.x<maze[0].length&&nbr.y>=1&&nbr.y<maze[0].length&&Originalmaze[nbr.x][nbr.y]==0&&visited[nbr.x][nbr.y]==0){
+                    visited[nbr.x][nbr.y]=1;
+                    queue.offer(nbr);
+                    nbr.prex=local.x;//保存前驱节点
+                    nbr.prey=local.y;//保存前驱节点
+                }
+            }
+        }
+        Stack<Integer> stack=new Stack<Integer>();
+        int  px=arrayList.get(arrayList.size()-1).prex;//获得目的节点的前驱节点
+        int  py=arrayList.get(arrayList.size()-1).prey;
+        stack.push(arrayList.size()-1);//将目的节点在arrayList中的位置记录下来，便于输出
+        while (true){
+            if(px==1&&py==1){//找到起始节点就停止
+                break;
+            }
+            for(int i=0;i<arrayList.size();i++){//循环找出每一个节点的前驱，找到就跳出当前循环
+                if(arrayList.get(i).x==px&&arrayList.get(i).y==py){
+                    px=arrayList.get(i).prex;
+                    py=arrayList.get(i).prey;
+                    stack.push(i);//保存节点在arrayList中的位置
+                    break;
+                }
+            }
+        }
+        System.out.println("(1,1)");
+        while (!stack.isEmpty()){
+            System.out.println("("+arrayList.get(stack.peek()).x+","+arrayList.get(stack.peek()).y+")");
+            stack.pop();
+        }
+
+		}
+			
+		
 //		A*算法进行寻路
 		
-		}
-	
 	
 	public static int[][] mazeheadle(int[][] maze){
 		ArrayList<Point> list = new ArrayList<Point>();
